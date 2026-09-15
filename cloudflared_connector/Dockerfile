@@ -1,5 +1,11 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.21
+# hadolint ignore=DL3006
+# The tag lives in the ARG default above and in build.yaml; the Supervisor
+# overrides BUILD_FROM per architecture, so the image cannot be tagged inline.
 FROM ${BUILD_FROM}
+
+# The verification step below pipes into sha256sum, so failures must propagate.
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
 ARG BUILD_ARCH=amd64
 ARG CLOUDFLARED_VERSION=2026.9.1

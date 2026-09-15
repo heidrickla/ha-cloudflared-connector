@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.2 - 2026-09-15
+
+- Set `pipefail` for the build step that verifies the cloudflared checksum, so
+  a failure anywhere in that pipeline fails the build (hadolint DL4006).
+- Document why the base image cannot be tagged inline: the Supervisor supplies
+  `BUILD_FROM` per architecture, and the tag lives in the ARG default and
+  `build.yaml` (hadolint DL3006).
+
 ## 1.1.1 - 2026-09-15
 
 - Add a custom AppArmor profile; the add-on now carries Home Assistant's
