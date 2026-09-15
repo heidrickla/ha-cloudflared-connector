@@ -1,5 +1,5 @@
 name: Cloudflared Connector
-version: "1.1.0"
+version: "1.1.1"
 slug: cloudflared_connector
 description: Connector for a Cloudflare Tunnel that is managed in the Zero Trust dashboard
 url: https://github.com/heidrickla/ha-cloudflared-connector

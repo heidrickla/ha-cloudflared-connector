@@ -64,9 +64,10 @@ Set the origin for each public hostname in Zero Trust accordingly.
   its own strong authentication and you accept it being internet-facing.
 - One token, one tunnel. If the token leaks, rotate it in Zero Trust
   (delete and recreate the tunnel's token) and update the add-on option.
-- The add-on runs without host networking, under Home Assistant's default
-  AppArmor confinement, and pins the cloudflared release it fetches, verifying
-  it against a recorded SHA-256 at build time.
+- The add-on runs without host networking and under its own AppArmor profile,
+  which gives it Home Assistant's maximum security rating, and pins the
+  cloudflared release it fetches, verifying it against a recorded SHA-256 at
+  build time.
 
 ## Troubleshooting
 

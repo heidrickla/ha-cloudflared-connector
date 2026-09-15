@@ -28,8 +28,8 @@ Full setup, origin addressing and troubleshooting are in the add-on's
   the command line.
 - Pins the cloudflared release it fetches and verifies it against a recorded
   SHA-256 at build time; pins the Home Assistant base images.
-- Runs without host networking, under Home Assistant's default AppArmor
-  confinement.
+- Runs without host networking and under its own AppArmor profile, which
+  gives it Home Assistant's maximum security rating.
 - Does not configure hostnames, origins or Access. Do that in Cloudflare, and
   put an Access policy in front of anything you would not want on the open
   internet.
@@ -42,6 +42,7 @@ Full setup, origin addressing and troubleshooting are in the add-on's
       build.yaml                 pinned base images and the cloudflared pin
       Dockerfile                 fetches and verifies the cloudflared binary
       run.sh                     reads the options and execs cloudflared
+      apparmor.txt               the add-on's AppArmor profile
       translations/en.yaml       option names and descriptions
       DOCS.md, CHANGELOG.md      shown in the add-on's Documentation and Changelog tabs
       icon.png, logo.png         store branding

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 - 2026-09-15
+
+- Add a custom AppArmor profile; the add-on now carries Home Assistant's
+  maximum security rating. cloudflared runs inside the add-on's profile
+  rather than in a child profile: the child-profile transition made the
+  static Go binary segfault at start on Home Assistant OS, and the platform
+  logs no AppArmor audit, so the profile was proven by running it.
+
 ## 1.1.0 - 2026-09-15
 
 - Drop host networking. The connector reaches origins over Home Assistant's
