@@ -1,4 +1,4 @@
-name: Lint
+name: Lint and build
 
 on:
   push:
@@ -6,23 +6,63 @@ on:
   pull_request:
 
 jobs:
-  addon:
-    name: Add-on linter
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: frenck/action-addon-linter@v2
-        with:
-          path: ./cloudflared_connector
 
-  shell:
-    name: Shell and Dockerfile
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: yamllint
+        run: |
+          pipx install yamllint
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}, comments: {min-spaces-from-content: 1}}}" \
+            repository.yaml \
+            cloudflared_connector/config.yaml \
+            cloudflared_connector/build.yaml \
+            cloudflared_connector/translations/en.yaml
+
       - name: shellcheck
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck && shellcheck cloudflared_connector/run.sh
+        run: shellcheck cloudflared_connector/run.sh
+
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: cloudflared_connector/Dockerfile
           ignore: DL3018
+
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            base: ghcr.io/home-assistant/amd64-base:3.21
+            platform: linux/amd64
+          - arch: aarch64
+            base: ghcr.io/home-assistant/aarch64-base:3.21
+            platform: linux/arm64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      # Builds the add-on image for one architecture. The Dockerfile verifies
+      # the cloudflared binary against a recorded SHA-256, so a build that
+      # succeeds also proves the pin is intact for that architecture.
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./cloudflared_connector
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            BUILD_FROM=${{ matrix.base }}
+            BUILD_ARCH=${{ matrix.arch }}
+          load: true
+          tags: cfd:${{ matrix.arch }}
+          push: false
+
+      - name: Run cloudflared from the built image
+        run: |
+          docker run --rm --platform ${{ matrix.platform }} \
+            --entrypoint /usr/local/bin/cloudflared cfd:${{ matrix.arch }} --version
