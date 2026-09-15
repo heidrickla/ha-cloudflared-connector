@@ -1,0 +1,4 @@
+# Never commit a tunnel token or any environment file holding one.
+*.env
+*.token
+.DS_Store

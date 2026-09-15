@@ -1,0 +1,28 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  addon:
+    name: Add-on linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: frenck/action-addon-linter@v2
+        with:
+          path: ./cloudflared_connector
+
+  shell:
+    name: Shell and Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck && shellcheck cloudflared_connector/run.sh
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: cloudflared_connector/Dockerfile
+          ignore: DL3018

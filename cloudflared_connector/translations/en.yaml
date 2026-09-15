@@ -1,0 +1,10 @@
+configuration:
+  tunnel_token:
+    name: Tunnel token
+    description: >-
+      The connector token for your dashboard-managed tunnel, from Cloudflare
+      Zero Trust, Networks, Tunnels. Passed to cloudflared through the
+      environment, never on the command line.
+  loglevel:
+    name: Log level
+    description: cloudflared log level. Use debug when diagnosing a connection.
