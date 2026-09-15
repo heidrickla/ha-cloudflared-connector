@@ -1,13 +1,7 @@
-"""Derive the add-on's icon.png and logo.png from Lewis's artwork.
+"""Derive the add-on's icon.png (128x128) and logo.png (250x100) from
+icon-source-dark.png. Scales and composes only; does not redraw the artwork.
+icon-family-reference.png is the design reference for the wider icon family.
 
-The mark is brand/icon-source-dark.png (512x512): an orange cloud with a
-tunnel cut from its base and a blue plug set into the opening, on a navy tile.
-Home Assistant add-ons take icon.png (128x128) and logo.png (about 250x100)
-beside config.yaml; the icon is the tile scaled down, the logo pairs the tile
-with a two-line wordmark. The artwork itself is not redrawn here.
-
-brand/icon-family-reference.png is Lewis's sheet for the wider icon family and
-is kept as the design reference. Run from the repo root:
     python brand/generate.py
 """
 
@@ -31,8 +25,8 @@ def icon(size):
 
 
 def logo(width, height):
-    """Tile at left, wordmark at right, transparent background. Slate for the
-    name so it reads on the light card the store draws logos on."""
+    """Tile left, wordmark right, transparent background. Name in slate: the
+    store draws logos on a light card."""
     W, H = width * S, height * S
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     tile = icon(H)

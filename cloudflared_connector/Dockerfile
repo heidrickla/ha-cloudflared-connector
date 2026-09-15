@@ -1,10 +1,10 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.21
-# The tag lives in the ARG default above and in build.yaml; the Supervisor
-# overrides BUILD_FROM per architecture, so the image cannot be tagged inline.
+# Tag is in the ARG default and build.yaml; the Supervisor overrides BUILD_FROM
+# per architecture, so it cannot be tagged inline.
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
-# The verification step below pipes into sha256sum, so failures must propagate.
+# The checksum check below pipes into sha256sum; failures must propagate.
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
 ARG BUILD_ARCH=amd64
@@ -12,9 +12,8 @@ ARG CLOUDFLARED_VERSION=2026.9.1
 ARG CLOUDFLARED_SHA256_AMD64=03f1f25d1cc93b9ad6c60569d44060bc4f17ed97075760ed8cfca4b12dcd68cc
 ARG CLOUDFLARED_SHA256_AARCH64=3d97437c71848bd8df68041e12436b484a661d95073ea1937f01a845ce88faa3
 
-# The official static cloudflared binary, pinned to one release and verified
-# against a recorded checksum, so a build cannot silently pick up a different
-# binary than the one this version was tested with.
+# Official static binary, pinned and checksum-verified so a build cannot pick
+# up a different one than was tested.
 RUN apk add --no-cache ca-certificates curl jq \
  && case "${BUILD_ARCH}" in \
       aarch64) CF_ARCH=arm64; CF_SHA="${CLOUDFLARED_SHA256_AARCH64}" ;; \

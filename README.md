@@ -1,57 +1,39 @@
 # Cloudflared Connector for Home Assistant
 
-A Home Assistant add-on that runs the connector for a Cloudflare Tunnel you
-manage in the Zero Trust dashboard. It holds one thing, the tunnel's connector
-token, and keeps the connection up. Public hostnames, origins and Access
-policies stay in Cloudflare, so exposing another service later needs no change
-to the add-on.
+Home Assistant add-on repository. One add-on: the connector for a Cloudflare
+Tunnel configured in the Zero Trust dashboard.
+
+Hostnames, origins and Access policies live in Cloudflare. The add-on holds
+only the connector token, so exposing another service needs no change here.
 
 ## Install
 
-Add this repository to your add-on store, then install Cloudflared Connector:
+Settings > Add-ons > Add-on Store > menu > Repositories, add:
 
     https://github.com/heidrickla/ha-cloudflared-connector
 
-Settings, Add-ons, Add-on Store, the menu in the top right, Repositories.
+Install `Cloudflared Connector`, set `tunnel_token`, start it. Up when the log
+shows `Registered tunnel connection` four times.
 
-Paste the connector token from Zero Trust (Networks, Tunnels) into the
-Tunnel token option and start the add-on. The log shows
-`Registered tunnel connection` four times when it is up.
+Setup, origin addressing and troubleshooting:
+[DOCS.md](cloudflared_connector/DOCS.md).
 
-Full setup, origin addressing and troubleshooting are in the add-on's
-[documentation](cloudflared_connector/DOCS.md).
+## Properties
 
-## What it does and does not do
+| | |
+|---|---|
+| Architectures | amd64, aarch64 |
+| Security rating | 8 (AppArmor profile, no host networking) |
+| cloudflared | 2026.9.1, SHA-256 verified at build |
+| Base image | `ghcr.io/home-assistant/{arch}-base:3.21` |
 
-- Runs cloudflared as a connector for a dashboard-managed tunnel.
-- Passes the token through the `TUNNEL_TOKEN` environment variable, never on
-  the command line.
-- Pins the cloudflared release it fetches and verifies it against a recorded
-  SHA-256 at build time; pins the Home Assistant base images.
-- Runs without host networking and under its own AppArmor profile, which
-  gives it Home Assistant's maximum security rating.
-- Does not configure hostnames, origins or Access. Do that in Cloudflare, and
-  put an Access policy in front of anything you would not want on the open
-  internet.
+## Layout
 
-## Repository layout
-
-    repository.yaml              add-on repository marker
+    repository.yaml              repository marker
     cloudflared_connector/       the add-on
-      config.yaml                metadata, options and schema
-      build.yaml                 pinned base images and the cloudflared pin
-      Dockerfile                 fetches and verifies the cloudflared binary
-      run.sh                     reads the options and execs cloudflared
-      apparmor.txt               the add-on's AppArmor profile
-      translations/en.yaml       option names and descriptions
-      DOCS.md, CHANGELOG.md      shown in the add-on's Documentation and Changelog tabs
-      icon.png, logo.png         store branding
-    brand/                       artwork sources and the script that derives the PNGs
+    brand/                       artwork sources; generate.py derives the PNGs
 
-## Artwork
-
-The mark and the icon-family sheet in `brand/` are the maintainer's own
-artwork. `brand/generate.py` only scales the tile and adds the wordmark.
+Artwork in `brand/` is the maintainer's own.
 
 ## License
 

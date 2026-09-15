@@ -1,10 +1,6 @@
 #!/bin/sh
-# Run the Cloudflare Tunnel connector for a dashboard-managed tunnel.
-#
-# The token is read from the add-on options and handed to cloudflared through
-# the TUNNEL_TOKEN environment variable rather than on the command line, so it
-# never appears in a process listing. Everything else about the tunnel (public
-# hostnames, origins, Access policies) lives in the Cloudflare dashboard.
+# Token goes to cloudflared via TUNNEL_TOKEN, not argv, to keep it out of the
+# process list.
 set -eu
 
 OPTS=/data/options.json

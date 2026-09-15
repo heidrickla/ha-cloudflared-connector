@@ -1,83 +1,53 @@
 # Cloudflared Connector
 
-Runs the connector side of a Cloudflare Tunnel that you manage in the Cloudflare
-Zero Trust dashboard. The add-on holds one thing, the tunnel's connector token,
-and keeps the connection to Cloudflare up. Everything else about the tunnel,
-its public hostnames, the origins they route to, and the Access policies that
-gate them, lives in Cloudflare and is pulled by the connector automatically.
+Runs the connector for a Cloudflare Tunnel configured in the Zero Trust
+dashboard. Hostnames, origins and Access policies are set in Cloudflare; the
+add-on holds only the connector token.
 
-Because the configuration is remote, exposing another service later needs no
-change to this add-on: add the hostname in Cloudflare and it is live.
+## Setup
 
-## Before you start
+1. Zero Trust > Networks > Tunnels. Create a tunnel with the Cloudflare
+   (dashboard) configuration option. Copy the connector token.
+2. Add a public hostname to the tunnel, origin per the table below.
+3. Add a Cloudflare Access application for that hostname. Without one the
+   service is on the open internet.
+4. Set `tunnel_token` here and start the add-on.
 
-1. In Cloudflare Zero Trust, go to Networks, Tunnels, and create a tunnel with
-   the Cloudflare (dashboard) configuration option.
-2. Copy the connector token shown on the install step. It is a long
-   base64-looking string. You do not need to run the install command Cloudflare
-   shows; this add-on is that command.
-3. Add a public hostname to the tunnel and point it at your service (see
-   Addressing origins below).
-4. Put a Cloudflare Access application in front of the hostname so that only
-   you can reach it. A tunnel alone makes a service public.
+Up when the log shows `Registered tunnel connection` four times and Zero Trust
+reports the tunnel Healthy. The install command Cloudflare displays is not
+needed; this add-on replaces it.
 
-## Installation
+## Options
 
-1. Add this repository to the add-on store: Settings, Add-ons, Add-on Store,
-   the menu in the top right, Repositories, then paste the repository URL.
-2. Install Cloudflared Connector.
-3. Open Configuration, paste the connector token into Tunnel token, and save.
-4. Start the add-on. Within a few seconds the log shows
-   `Registered tunnel connection` four times, once per edge connection, and
-   the tunnel shows as Healthy in Zero Trust.
-
-## Configuration
-
-| Option | Required | Default | Meaning |
+| Option | Required | Default | Values |
 |---|---|---|---|
-| `tunnel_token` | yes | | The connector token for your dashboard-managed tunnel |
-| `loglevel` | no | `info` | cloudflared log level: `debug`, `info`, `warn` or `error` |
+| `tunnel_token` | yes | | Connector token from Zero Trust |
+| `loglevel` | no | `info` | `debug`, `info`, `warn`, `error` |
 
-The token is handed to cloudflared through the `TUNNEL_TOKEN` environment
-variable, not on the command line, so it does not appear in a process listing.
-It is stored in the add-on's options, which Home Assistant keeps in its own
-protected storage.
+## Origins
 
-## Addressing origins
+The add-on uses Home Assistant's internal network, not host networking.
 
-The add-on runs on Home Assistant's internal network, without host networking.
-From there:
+| Target | Origin |
+|---|---|
+| Home Assistant | `http://homeassistant:8123` |
+| Another add-on | `http://<slug with dashes>:<container port>` |
+| LAN service | `http://<address>:<port>` |
 
-- Home Assistant itself is `http://homeassistant:8123`.
-- Another add-on is reachable by its hostname, which is its slug with
-  underscores replaced by dashes, on the port the add-on listens on inside its
-  container, for example `http://a0d7b954-bookstack:80`.
-- A service published on the Home Assistant host's LAN address, or anything
-  else on your network, is reachable by that address and port, for example
-  `http://192.168.1.10:2665`.
+## Security
 
-Set the origin for each public hostname in Zero Trust accordingly.
-
-## Security notes
-
-- Do not publish a hostname without an Access policy unless the service has
-  its own strong authentication and you accept it being internet-facing.
-- One token, one tunnel. If the token leaks, rotate it in Zero Trust
-  (delete and recreate the tunnel's token) and update the add-on option.
-- The add-on runs without host networking and under its own AppArmor profile,
-  which gives it Home Assistant's maximum security rating, and pins the
-  cloudflared release it fetches, verifying it against a recorded SHA-256 at
-  build time.
+- Token reaches cloudflared through `TUNNEL_TOKEN`, not the command line.
+- No host networking. AppArmor profile. Security rating 8.
+- cloudflared pinned to one release, SHA-256 verified per architecture at
+  build.
+- To rotate a leaked token: recreate the tunnel token in Zero Trust, then
+  update the option.
 
 ## Troubleshooting
 
-- Log shows `Unauthorized` or `token is invalid`: the token was copied wrong
-  or belongs to a deleted tunnel. Paste it again from Zero Trust.
-- Public hostname returns Cloudflare error 1033: the tunnel has no connected
-  connector. Check the add-on is running and the log shows registered
-  connections.
-- Public hostname returns 502: the tunnel is up but the origin is unreachable
-  from the add-on. Check the origin address in Zero Trust against the
-  Addressing origins section.
-- Nothing after `starting connector`: check the log for the four
-  `Registered tunnel connection` lines. Set `loglevel` to `debug` for more.
+| Symptom | Cause |
+|---|---|
+| `Unauthorized`, invalid token | Token mistyped, or its tunnel was deleted |
+| Cloudflare error 1033 | No connector connected; check the add-on is running |
+| 502 | Origin unreachable from the add-on; see Origins |
+| No registered connections | Set `loglevel` to `debug` and re-read the log |
