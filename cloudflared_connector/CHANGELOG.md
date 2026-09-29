@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.5 - 2026-09-29
+
+- Base image `ghcr.io/home-assistant/{arch}-base:3.24` (Alpine 3.24), from 3.21.
+
 ## 1.1.4 - 2026-09-29
 
 - cloudflared 2026.9.3, SHA-256 verified per architecture at build.

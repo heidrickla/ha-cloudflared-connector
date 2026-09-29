@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.21
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.24
 # Tag is in the ARG default and build.yaml; the Supervisor overrides BUILD_FROM
 # per architecture, so it cannot be tagged inline.
 # hadolint ignore=DL3006
