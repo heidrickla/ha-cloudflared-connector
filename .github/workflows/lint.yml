@@ -5,8 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# The forge's act_runner also reads .github/workflows; both jobs run on GitHub
+# only.
 jobs:
   lint:
+    if: github.server_url == 'https://github.com'
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +33,7 @@ jobs:
           ignore: DL3018
 
   build:
+    if: github.server_url == 'https://github.com'
     name: Build ${{ matrix.arch }}
     runs-on: ubuntu-latest
     strategy:
