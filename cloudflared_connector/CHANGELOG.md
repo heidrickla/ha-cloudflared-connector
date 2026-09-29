@@ -20,13 +20,11 @@
 ## 1.1.1 - 2026-09-15
 
 - Add an AppArmor profile. Security rating 8.
-- cloudflared runs in the add-on's own profile, not a child profile: the child
-  transition segfaults the static Go binary on Home Assistant OS.
+- cloudflared runs in the add-on's own profile, not a child profile: the child transition segfaults the static Go binary on Home Assistant OS.
 
 ## 1.1.0 - 2026-09-15
 
-- Drop host networking. Origins are reached over Home Assistant's internal
-  network by hostname or LAN address.
+- Drop host networking. Origins are reached over Home Assistant's internal network by hostname or LAN address.
 - Pin cloudflared to 2026.9.1, SHA-256 verified per architecture at build.
 - Pin the base images in `build.yaml`.
 - Add `DOCS.md`, option translations and OCI image labels.
@@ -41,5 +39,4 @@
 
 ## 1.0.0 - 2026-09-15
 
-- First release. Runs the connector for a dashboard-managed tunnel from the
-  `tunnel_token` option, passed via `TUNNEL_TOKEN`.
+- First release. Runs the connector for a dashboard-managed tunnel from the `tunnel_token` option, passed via `TUNNEL_TOKEN`.
