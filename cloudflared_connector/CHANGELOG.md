@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.4 - 2026-09-29
+
+- cloudflared 2026.9.3, SHA-256 verified per architecture at build.
+
 ## 1.1.3 - 2026-09-15
 
 - Documentation and comments cut to facts.
