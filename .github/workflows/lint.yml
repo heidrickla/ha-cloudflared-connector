@@ -11,7 +11,7 @@ jobs:
   lint:
     if: github.server_url == 'https://github.com'
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -35,7 +35,7 @@ jobs:
   build:
     if: github.server_url == 'https://github.com'
     name: Build ${{ matrix.arch }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
