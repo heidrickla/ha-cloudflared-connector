@@ -5,27 +5,27 @@ on:
     branches: [main]
   pull_request:
 
-# The forge's act_runner also reads .github/workflows; both jobs run on GitHub
-# only.
+# The forge runs both jobs too; its runner has no ubuntu-26.04 label, and its
+# act image has pipx but no shellcheck and no ~/.local/bin on PATH.
 jobs:
   lint:
-    if: github.server_url == 'https://github.com'
     name: Lint
     runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 
       - name: yamllint
+        timeout-minutes: 10
         run: |
-          pipx install yamllint
-          yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}, comments: {min-spaces-from-content: 1}}}" \
+          pipx run yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}, comments: {min-spaces-from-content: 1}}}" \
             repository.yaml \
             cloudflared_connector/config.yaml \
             cloudflared_connector/build.yaml \
             cloudflared_connector/translations/en.yaml
 
       - name: shellcheck
-        run: shellcheck cloudflared_connector/run.sh
+        timeout-minutes: 10
+        run: pipx run --spec shellcheck-py shellcheck cloudflared_connector/run.sh
 
       - uses: hadolint/hadolint-action@v3.1.0
         with:
@@ -33,7 +33,6 @@ jobs:
           ignore: DL3018
 
   build:
-    if: github.server_url == 'https://github.com'
     name: Build ${{ matrix.arch }}
     runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
     strategy:
@@ -41,13 +40,20 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            base: ghcr.io/home-assistant/amd64-base:3.21
+            base: ghcr.io/home-assistant/amd64-base:3.24
             platform: linux/amd64
           - arch: aarch64
-            base: ghcr.io/home-assistant/aarch64-base:3.21
+            base: ghcr.io/home-assistant/aarch64-base:3.24
             platform: linux/arm64
     steps:
       - uses: actions/checkout@v4
+
+      # The matrix names the base the Supervisor builds from; a stale copy tests
+      # an image nobody installs.
+      - name: Base matches build.yaml
+        run: |
+          grep -qxF "  ${{ matrix.arch }}: ${{ matrix.base }}" cloudflared_connector/build.yaml
+
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
 
@@ -55,6 +61,7 @@ jobs:
       # the cloudflared binary against a recorded SHA-256, so a build that
       # succeeds also proves the pin is intact for that architecture.
       - name: Build
+        timeout-minutes: 30
         uses: docker/build-push-action@v6
         with:
           context: ./cloudflared_connector
@@ -67,6 +74,7 @@ jobs:
           push: false
 
       - name: Run cloudflared from the built image
+        timeout-minutes: 5
         run: |
           docker run --rm --platform ${{ matrix.platform }} \
             --entrypoint /usr/local/bin/cloudflared cfd:${{ matrix.arch }} --version
