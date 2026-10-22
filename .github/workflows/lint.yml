@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 # The forge runs both jobs too; its runner has no ubuntu-26.04 label, and its
 # act image has pipx but no shellcheck and no ~/.local/bin on PATH.
 jobs:
@@ -12,7 +15,7 @@ jobs:
     name: Lint
     runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: yamllint
         timeout-minutes: 10
@@ -27,7 +30,7 @@ jobs:
         timeout-minutes: 10
         run: pipx run --spec shellcheck-py shellcheck cloudflared_connector/run.sh
 
-      - uses: hadolint/hadolint-action@v3.1.0
+      - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: cloudflared_connector/Dockerfile
           ignore: DL3018
@@ -46,7 +49,7 @@ jobs:
             base: ghcr.io/home-assistant/aarch64-base:3.24
             platform: linux/arm64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       # The matrix names the base the Supervisor builds from; a stale copy tests
       # an image nobody installs.
@@ -54,15 +57,15 @@ jobs:
         run: |
           grep -qxF "  ${{ matrix.arch }}: ${{ matrix.base }}" cloudflared_connector/build.yaml
 
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       # Builds the add-on image for one architecture. The Dockerfile verifies
       # the cloudflared binary against a recorded SHA-256, so a build that
       # succeeds also proves the pin is intact for that architecture.
       - name: Build
         timeout-minutes: 30
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: ./cloudflared_connector
           platforms: ${{ matrix.platform }}
