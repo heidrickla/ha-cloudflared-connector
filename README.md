@@ -20,7 +20,7 @@ Setup, origin addressing and troubleshooting: [DOCS.md](cloudflared_connector/DO
 |---|---|
 | Architectures | amd64, aarch64 |
 | Security rating | 8 (AppArmor profile, no host networking) |
-| cloudflared | 2026.9.3, SHA-256 verified at build |
+| cloudflared | 2026.10.4, SHA-256 verified at build |
 | Base image | `ghcr.io/home-assistant/{arch}-base:3.24` |
 
 ## Layout

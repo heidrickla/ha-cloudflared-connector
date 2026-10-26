@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.6 - 2026-10-26
+
+- cloudflared 2026.10.4, SHA-256 verified per architecture at build. Versions before 2026.10.2 trust the compromised eMudhra intermediate certificates (Cloudflare advisory, 2026-10-20). Updating the add-on rebuilds it with the new binary.
+
 ## 1.1.5 - 2026-09-29
 
 - Base image `ghcr.io/home-assistant/{arch}-base:3.24` (Alpine 3.24), from 3.21.
