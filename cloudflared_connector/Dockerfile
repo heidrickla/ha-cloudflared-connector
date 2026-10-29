@@ -1,4 +1,25 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.24
+
+# The connector, built natively for the architecture being built: the Supervisor builds on the
+# machine that runs the add-on, and the Rust image is multi-arch. Tag and index digest pinned.
+FROM rust:1.98.1-alpine3.24@sha256:7cc1c22d77d9432f7fe012a70e6d3e555af54c2a6832700ed7d553f1769ae89f AS connector
+
+SHELL ["/bin/ash", "-o", "pipefail", "-c"]
+
+ARG BUILD_ARCH=amd64
+WORKDIR /src
+COPY connector/Cargo.toml connector/Cargo.lock ./
+COPY connector/src ./src
+COPY connector/web ./web
+COPY connector/fixtures ./fixtures
+RUN case "${BUILD_ARCH}" in \
+      aarch64) TARGET=aarch64-unknown-linux-musl ;; \
+      amd64)   TARGET=x86_64-unknown-linux-musl ;; \
+      *)       echo "unsupported BUILD_ARCH ${BUILD_ARCH}" >&2; exit 1 ;; \
+    esac \
+ && cargo build --release --locked --target "${TARGET}" \
+ && install -m 755 "target/${TARGET}/release/connector" /connector
+
 # Tag is in the ARG default and build.yaml; the Supervisor overrides BUILD_FROM
 # per architecture, so it cannot be tagged inline.
 # hadolint ignore=DL3006
@@ -14,7 +35,7 @@ ARG CLOUDFLARED_SHA256_AARCH64=2b7203b4fb0ba28a0c1e12f8855ce2c25f76d266a8d5edafa
 
 # Official static binary, pinned and checksum-verified so a build cannot pick
 # up a different one than was tested.
-RUN apk add --no-cache ca-certificates curl jq \
+RUN apk add --no-cache ca-certificates curl \
  && case "${BUILD_ARCH}" in \
       aarch64) CF_ARCH=arm64; CF_SHA="${CLOUDFLARED_SHA256_AARCH64}" ;; \
       amd64)   CF_ARCH=amd64; CF_SHA="${CLOUDFLARED_SHA256_AMD64}" ;; \
@@ -26,10 +47,10 @@ RUN apk add --no-cache ca-certificates curl jq \
  && chmod +x /usr/local/bin/cloudflared \
  && /usr/local/bin/cloudflared --version
 
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
+COPY --from=connector /connector /usr/local/bin/connector
+RUN /usr/local/bin/connector --version
 
-CMD ["/run.sh"]
+CMD ["/usr/local/bin/connector"]
 
 ARG BUILD_DATE
 ARG BUILD_DESCRIPTION

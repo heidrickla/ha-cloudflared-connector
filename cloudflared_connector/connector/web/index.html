@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cloudflared</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header class="top">
+    <h1>Cloudflared <small id="version"></small></h1>
+    <button id="theme" type="button" title="Switch the colour theme">Light</button>
+  </header>
+  <div id="tiles" class="tiles"></div>
+  <p id="headline" class="headline"></p>
+  <div id="notices"></div>
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="overview">Overview</button>
+    <button type="button" role="tab" data-tab="hostnames">Hostnames</button>
+    <button type="button" role="tab" data-tab="log">Log</button>
+  </nav>
+  <section id="tab-overview" class="grid" role="tabpanel"></section>
+  <section id="tab-hostnames" class="grid" role="tabpanel" hidden></section>
+  <section id="tab-log" class="grid" role="tabpanel" hidden></section>
+  <p id="foot" class="foot small muted"></p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

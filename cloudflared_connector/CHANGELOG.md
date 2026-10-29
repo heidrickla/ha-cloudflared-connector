@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 - 2026-10-29
+
+- A management panel in the Home Assistant sidebar (ingress): connection state, each edge connection with its location, protocol and round trip, request and response counts, the public hostnames the dashboard configured, the cloudflared log, and a restart button.
+- The add-on's process is `connector`, a Rust binary that runs cloudflared as its child, restarts it with backoff when it exits, and stops it with the add-on. The tunnel token still reaches cloudflared only through `TUNNEL_TOKEN`. cloudflared's output reaches the add-on log unchanged.
+- The image is built in two stages; the connector is compiled at install for the machine's architecture. `run.sh` is gone.
+
 ## 1.1.6 - 2026-10-26
 
 - cloudflared 2026.10.4, SHA-256 verified per architecture at build. Versions before 2026.10.2 trust the compromised eMudhra intermediate certificates (Cloudflare advisory, 2026-10-20). Updating the add-on rebuilds it with the new binary.

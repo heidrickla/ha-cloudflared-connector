@@ -8,8 +8,8 @@ on:
 permissions:
   contents: read
 
-# The forge runs both jobs too; its runner has no ubuntu-26.04 label, and its
-# act image has pipx but no shellcheck and no ~/.local/bin on PATH.
+# The forge runs these jobs too; its runner has no ubuntu-26.04 label, and its
+# act image has pipx but no ~/.local/bin on PATH.
 jobs:
   lint:
     name: Lint
@@ -26,14 +26,73 @@ jobs:
             cloudflared_connector/build.yaml \
             cloudflared_connector/translations/en.yaml
 
-      - name: shellcheck
-        timeout-minutes: 10
-        run: pipx run --spec shellcheck-py shellcheck cloudflared_connector/run.sh
-
       - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: cloudflared_connector/Dockerfile
           ignore: DL3018
+
+  rust:
+    name: Rust
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
+    defaults:
+      run:
+        working-directory: cloudflared_connector/connector
+    env:
+      CARGO_TERM_COLOR: never
+      CARGO_INCREMENTAL: 0
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      # rustup-init pinned by version and checked against its published digest; the toolchain is
+      # the one the Dockerfile's Rust image carries.
+      - name: toolchain (pinned)
+        timeout-minutes: 10
+        run: |
+          r=1.29.1
+          i="$RUNNER_TEMP/rustup-init"
+          curl --proto '=https' --tlsv1.2 -sSf -o "$i" "https://static.rust-lang.org/rustup/archive/$r/x86_64-unknown-linux-gnu/rustup-init"
+          echo "dda7234360b7f578ca8b0ddcb80145646fa61a67c1720a5abc7051b35c9fcb71  $i" | sha256sum -c -
+          chmod +x "$i"
+          "$i" -y --profile minimal --default-toolchain 1.98.1 --component clippy,rustfmt
+          "$HOME/.cargo/bin/rustc" --version | grep -F ' 1.98.1 '
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: toolchain matches the Dockerfile
+        run: grep -q '^FROM rust:1\.98\.1-alpine' ../Dockerfile
+
+      - name: cargo-deny (pinned)
+        timeout-minutes: 5
+        run: |
+          v=0.20.2
+          d=cargo-deny-$v-x86_64-unknown-linux-musl
+          curl -sSfL -o "$RUNNER_TEMP/$d.tar.gz" "https://github.com/EmbarkStudios/cargo-deny/releases/download/$v/$d.tar.gz"
+          echo "9f12ed4c49936e09b48bf862b595cde2fe64fcbd9d74dfacac6131ca824c8d5f  $RUNNER_TEMP/$d.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$d.tar.gz" --strip-components=1 -C "$HOME/.cargo/bin" "$d/cargo-deny"
+
+      - name: cargo-nextest (pinned)
+        timeout-minutes: 5
+        run: |
+          n=cargo-nextest-0.9.146-x86_64-unknown-linux-musl.tar.gz
+          curl -sSfL -o "$RUNNER_TEMP/$n" "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.146/$n"
+          echo "b64617e8640624e8f9ba99819e37d7971154e97836d7ae4774fed4715501a6aa  $RUNNER_TEMP/$n" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/nextest" && tar -xzf "$RUNNER_TEMP/$n" -C "$RUNNER_TEMP/nextest"
+          install -m 755 "$(find "$RUNNER_TEMP/nextest" -type f -name cargo-nextest)" "$HOME/.cargo/bin/"
+          cargo nextest --version
+
+      - name: format
+        run: cargo fmt --check
+
+      - name: lint
+        timeout-minutes: 15
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: test
+        timeout-minutes: 15
+        run: cargo nextest run --locked --no-fail-fast
+
+      - name: dependencies
+        timeout-minutes: 10
+        run: cargo deny check
 
   build:
     name: Build ${{ matrix.arch }}
@@ -60,11 +119,11 @@ jobs:
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      # Builds the add-on image for one architecture. The Dockerfile verifies
-      # the cloudflared binary against a recorded SHA-256, so a build that
-      # succeeds also proves the pin is intact for that architecture.
+      # Builds the add-on image for one architecture, the connector included (compiled under
+      # emulation for aarch64, hence the long timeout). The Dockerfile verifies the cloudflared
+      # binary against a recorded SHA-256, so a build that succeeds also proves the pin.
       - name: Build
-        timeout-minutes: 30
+        timeout-minutes: 90
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: ./cloudflared_connector
@@ -76,8 +135,10 @@ jobs:
           tags: cfd:${{ matrix.arch }}
           push: false
 
-      - name: Run cloudflared from the built image
+      - name: Run both binaries from the built image
         timeout-minutes: 5
         run: |
           docker run --rm --platform ${{ matrix.platform }} \
             --entrypoint /usr/local/bin/cloudflared cfd:${{ matrix.arch }} --version
+          docker run --rm --platform ${{ matrix.platform }} \
+            --entrypoint /usr/local/bin/connector cfd:${{ matrix.arch }} --version

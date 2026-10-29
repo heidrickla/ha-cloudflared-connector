@@ -1,0 +1,56 @@
+# HELP build_info Build and version information
+# TYPE build_info gauge
+build_info{goversion="go1.27.3",revision="2026-10-26-11:12 UTC",type="",version="2026.10.4"} 1
+# HELP cloudflared_orchestration_config_version Configuration Version
+# TYPE cloudflared_orchestration_config_version gauge
+cloudflared_orchestration_config_version 7
+# HELP cloudflared_tunnel_concurrent_requests_per_tunnel Concurrent requests proxied through each tunnel
+# TYPE cloudflared_tunnel_concurrent_requests_per_tunnel gauge
+cloudflared_tunnel_concurrent_requests_per_tunnel 3
+# HELP cloudflared_tunnel_ha_connections Number of active ha connections
+# TYPE cloudflared_tunnel_ha_connections gauge
+cloudflared_tunnel_ha_connections 4
+# HELP cloudflared_tunnel_request_errors Count of error proxying to origin
+# TYPE cloudflared_tunnel_request_errors counter
+cloudflared_tunnel_request_errors 27
+# HELP cloudflared_tunnel_response_by_code Count of responses by HTTP status code
+# TYPE cloudflared_tunnel_response_by_code counter
+cloudflared_tunnel_response_by_code{status_code="101"} 412
+cloudflared_tunnel_response_by_code{status_code="200"} 15873
+cloudflared_tunnel_response_by_code{status_code="302"} 1204
+cloudflared_tunnel_response_by_code{status_code="304"} 655
+cloudflared_tunnel_response_by_code{status_code="401"} 98
+cloudflared_tunnel_response_by_code{status_code="404"} 73
+cloudflared_tunnel_response_by_code{status_code="502"} 27
+# HELP cloudflared_tunnel_server_locations Where each tunnel is connected to. 1 means current location, 0 means previous locations.
+# TYPE cloudflared_tunnel_server_locations gauge
+cloudflared_tunnel_server_locations{connection_id="0",edge_location="ord02"} 1
+cloudflared_tunnel_server_locations{connection_id="1",edge_location="ord05"} 0
+cloudflared_tunnel_server_locations{connection_id="1",edge_location="iad08"} 1
+cloudflared_tunnel_server_locations{connection_id="2",edge_location="ord05"} 1
+cloudflared_tunnel_server_locations{connection_id="3",edge_location="ord02"} 0
+cloudflared_tunnel_server_locations{connection_id="3",edge_location="iad08"} 1
+# HELP cloudflared_tunnel_total_requests Amount of requests proxied through all the tunnels
+# TYPE cloudflared_tunnel_total_requests counter
+cloudflared_tunnel_total_requests 18342
+# HELP cloudflared_tunnel_tunnel_register_success Count of successful tunnel registrations
+# TYPE cloudflared_tunnel_tunnel_register_success counter
+cloudflared_tunnel_tunnel_register_success{rpcName="registerConnection"} 5
+# HELP quic_client_receive_bytes Number of bytes received
+# TYPE quic_client_receive_bytes counter
+quic_client_receive_bytes{conn_index="0"} 1.84213774e+08
+quic_client_receive_bytes{conn_index="1"} 9.6511302e+07
+quic_client_receive_bytes{conn_index="2"} 1.52300871e+08
+quic_client_receive_bytes{conn_index="3"} 2.1877409e+07
+# HELP quic_client_sent_bytes Number of bytes sent
+# TYPE quic_client_sent_bytes counter
+quic_client_sent_bytes{conn_index="0"} 2.411950383e+09
+quic_client_sent_bytes{conn_index="1"} 1.307214556e+09
+quic_client_sent_bytes{conn_index="2"} 1.988340127e+09
+quic_client_sent_bytes{conn_index="3"} 2.80551206e+08
+# HELP quic_client_smoothed_rtt Calculated smoothed RTT measured on a connection in millisec
+# TYPE quic_client_smoothed_rtt gauge
+quic_client_smoothed_rtt{conn_index="0"} 14
+quic_client_smoothed_rtt{conn_index="1"} 31
+quic_client_smoothed_rtt{conn_index="2"} 16
+quic_client_smoothed_rtt{conn_index="3"} 29

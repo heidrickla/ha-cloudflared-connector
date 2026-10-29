@@ -1,0 +1,253 @@
+# HELP build_info Build and version information
+# TYPE build_info gauge
+build_info{goversion="go1.27.3",revision="2026-10-26-11:12 UTC",type="",version="2026.10.4"} 1
+# HELP cloudflared_config_local_config_pushes Number of local configuration pushes to the edge
+# TYPE cloudflared_config_local_config_pushes counter
+cloudflared_config_local_config_pushes 0
+# HELP cloudflared_config_local_config_pushes_errors Number of errors occurred during local configuration pushes
+# TYPE cloudflared_config_local_config_pushes_errors counter
+cloudflared_config_local_config_pushes_errors 0
+# HELP cloudflared_icmp_total_replies Total count of ICMP replies that have been proxied from any origin
+# TYPE cloudflared_icmp_total_replies counter
+cloudflared_icmp_total_replies 0
+# HELP cloudflared_icmp_total_requests Total count of ICMP requests that have been proxied to any origin
+# TYPE cloudflared_icmp_total_requests counter
+cloudflared_icmp_total_requests 0
+# HELP cloudflared_orchestration_config_version Configuration Version
+# TYPE cloudflared_orchestration_config_version gauge
+cloudflared_orchestration_config_version 0
+# HELP cloudflared_proxy_connect_latency Time it takes to establish and acknowledge connections in milliseconds
+# TYPE cloudflared_proxy_connect_latency histogram
+cloudflared_proxy_connect_latency_bucket{le="1"} 0
+cloudflared_proxy_connect_latency_bucket{le="10"} 0
+cloudflared_proxy_connect_latency_bucket{le="25"} 0
+cloudflared_proxy_connect_latency_bucket{le="50"} 0
+cloudflared_proxy_connect_latency_bucket{le="100"} 0
+cloudflared_proxy_connect_latency_bucket{le="500"} 0
+cloudflared_proxy_connect_latency_bucket{le="1000"} 0
+cloudflared_proxy_connect_latency_bucket{le="5000"} 0
+cloudflared_proxy_connect_latency_bucket{le="+Inf"} 0
+cloudflared_proxy_connect_latency_sum 0
+cloudflared_proxy_connect_latency_count 0
+# HELP cloudflared_proxy_connect_streams_errors Total count of failure to establish and acknowledge connections
+# TYPE cloudflared_proxy_connect_streams_errors counter
+cloudflared_proxy_connect_streams_errors 0
+# HELP cloudflared_rpc_client_failures Number of rpc method failures by handler requested
+# TYPE cloudflared_rpc_client_failures counter
+cloudflared_rpc_client_failures{handler="registration",method="register_connection"} 4
+# HELP cloudflared_rpc_client_latency_secs Latency of rpc methods by handler requested
+# TYPE cloudflared_rpc_client_latency_secs histogram
+cloudflared_rpc_client_latency_secs_bucket{handler="registration",method="register_connection",le="0.05"} 3
+cloudflared_rpc_client_latency_secs_bucket{handler="registration",method="register_connection",le="0.15000000000000002"} 4
+cloudflared_rpc_client_latency_secs_bucket{handler="registration",method="register_connection",le="0.45000000000000007"} 4
+cloudflared_rpc_client_latency_secs_bucket{handler="registration",method="register_connection",le="1.35"} 4
+cloudflared_rpc_client_latency_secs_bucket{handler="registration",method="register_connection",le="4.050000000000001"} 4
+cloudflared_rpc_client_latency_secs_bucket{handler="registration",method="register_connection",le="+Inf"} 4
+cloudflared_rpc_client_latency_secs_sum{handler="registration",method="register_connection"} 0.132584698
+cloudflared_rpc_client_latency_secs_count{handler="registration",method="register_connection"} 4
+# HELP cloudflared_rpc_client_operations Number of rpc methods by handler requested
+# TYPE cloudflared_rpc_client_operations counter
+cloudflared_rpc_client_operations{handler="registration",method="register_connection"} 4
+# HELP cloudflared_tcp_active_sessions Concurrent count of TCP sessions that are being proxied to any origin
+# TYPE cloudflared_tcp_active_sessions gauge
+cloudflared_tcp_active_sessions 0
+# HELP cloudflared_tcp_total_sessions Total count of TCP sessions that have been proxied to any origin
+# TYPE cloudflared_tcp_total_sessions counter
+cloudflared_tcp_total_sessions 0
+# HELP cloudflared_tunnel_concurrent_requests_per_tunnel Concurrent requests proxied through each tunnel
+# TYPE cloudflared_tunnel_concurrent_requests_per_tunnel gauge
+cloudflared_tunnel_concurrent_requests_per_tunnel 0
+# HELP cloudflared_tunnel_ha_connections Number of active ha connections
+# TYPE cloudflared_tunnel_ha_connections gauge
+cloudflared_tunnel_ha_connections 1
+# HELP cloudflared_tunnel_request_errors Count of error proxying to origin
+# TYPE cloudflared_tunnel_request_errors counter
+cloudflared_tunnel_request_errors 0
+# HELP cloudflared_tunnel_total_requests Amount of requests proxied through all the tunnels
+# TYPE cloudflared_tunnel_total_requests counter
+cloudflared_tunnel_total_requests 0
+# HELP cloudflared_tunnel_tunnel_register_fail Count of tunnel registration errors by type
+# TYPE cloudflared_tunnel_tunnel_register_fail counter
+cloudflared_tunnel_tunnel_register_fail{error="server_error",rpcName="registerConnection"} 4
+# HELP cloudflared_udp_active_sessions Concurrent count of UDP sessions that are being proxied to any origin
+# TYPE cloudflared_udp_active_sessions gauge
+cloudflared_udp_active_sessions 0
+# HELP cloudflared_udp_total_sessions Total count of UDP sessions that have been proxied to any origin
+# TYPE cloudflared_udp_total_sessions counter
+cloudflared_udp_total_sessions 0
+# HELP go_gc_duration_seconds A summary of the wall-time pause (stop-the-world) duration in garbage collection cycles.
+# TYPE go_gc_duration_seconds summary
+go_gc_duration_seconds{quantile="0"} 0.164237622
+go_gc_duration_seconds{quantile="0.25"} 0.164237622
+go_gc_duration_seconds{quantile="0.5"} 0.164237622
+go_gc_duration_seconds{quantile="0.75"} 0.164237622
+go_gc_duration_seconds{quantile="1"} 0.164237622
+go_gc_duration_seconds_sum 0.164237622
+go_gc_duration_seconds_count 1
+# HELP go_gc_gogc_percent Heap size target percentage configured by the user, otherwise 100. This value is set by the GOGC environment variable, and the runtime/debug.SetGCPercent function. Sourced from /gc/gogc:percent.
+# TYPE go_gc_gogc_percent gauge
+go_gc_gogc_percent 100
+# HELP go_gc_gomemlimit_bytes Go runtime memory limit configured by the user, otherwise math.MaxInt64. This value is set by the GOMEMLIMIT environment variable, and the runtime/debug.SetMemoryLimit function. Sourced from /gc/gomemlimit:bytes.
+# TYPE go_gc_gomemlimit_bytes gauge
+go_gc_gomemlimit_bytes 9.223372036854776e+18
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 29
+# HELP go_info Information about the Go environment.
+# TYPE go_info gauge
+go_info{version="go1.27.3"} 1
+# HELP go_memstats_alloc_bytes Number of bytes allocated in heap and currently in use. Equals to /memory/classes/heap/objects:bytes.
+# TYPE go_memstats_alloc_bytes gauge
+go_memstats_alloc_bytes 6.665608e+06
+# HELP go_memstats_alloc_bytes_total Total number of bytes allocated in heap until now, even if released already. Equals to /gc/heap/allocs:bytes.
+# TYPE go_memstats_alloc_bytes_total counter
+go_memstats_alloc_bytes_total 8.31436e+06
+# HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table. Equals to /memory/classes/profiling/buckets:bytes.
+# TYPE go_memstats_buck_hash_sys_bytes gauge
+go_memstats_buck_hash_sys_bytes 1.537669e+06
+# HELP go_memstats_frees_total Total number of heap objects frees. Equals to /gc/heap/frees:objects + /gc/heap/tiny/allocs:objects.
+# TYPE go_memstats_frees_total counter
+go_memstats_frees_total 38719
+# HELP go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata. Equals to /memory/classes/metadata/other:bytes.
+# TYPE go_memstats_gc_sys_bytes gauge
+go_memstats_gc_sys_bytes 3.024624e+06
+# HELP go_memstats_heap_alloc_bytes Number of heap bytes allocated and currently in use, same as go_memstats_alloc_bytes. Equals to /memory/classes/heap/objects:bytes.
+# TYPE go_memstats_heap_alloc_bytes gauge
+go_memstats_heap_alloc_bytes 6.665608e+06
+# HELP go_memstats_heap_idle_bytes Number of heap bytes waiting to be used. Equals to /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE go_memstats_heap_idle_bytes gauge
+go_memstats_heap_idle_bytes 5.357568e+06
+# HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes
+# TYPE go_memstats_heap_inuse_bytes gauge
+go_memstats_heap_inuse_bytes 1.0305536e+07
+# HELP go_memstats_heap_objects Number of currently allocated objects. Equals to /gc/heap/objects:objects.
+# TYPE go_memstats_heap_objects gauge
+go_memstats_heap_objects 50929
+# HELP go_memstats_heap_released_bytes Number of heap bytes released to OS. Equals to /memory/classes/heap/released:bytes.
+# TYPE go_memstats_heap_released_bytes gauge
+go_memstats_heap_released_bytes 5.070848e+06
+# HELP go_memstats_heap_sys_bytes Number of heap bytes obtained from system. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes + /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE go_memstats_heap_sys_bytes gauge
+go_memstats_heap_sys_bytes 1.5663104e+07
+# HELP go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE go_memstats_last_gc_time_seconds gauge
+go_memstats_last_gc_time_seconds 1.7933102597008266e+09
+# HELP go_memstats_mallocs_total Total number of heap objects allocated, both live and gc-ed. Semantically a counter version for go_memstats_heap_objects gauge. Equals to /gc/heap/allocs:objects + /gc/heap/tiny/allocs:objects.
+# TYPE go_memstats_mallocs_total counter
+go_memstats_mallocs_total 89648
+# HELP go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures. Equals to /memory/classes/metadata/mcache/inuse:bytes.
+# TYPE go_memstats_mcache_inuse_bytes gauge
+go_memstats_mcache_inuse_bytes 36736
+# HELP go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system. Equals to /memory/classes/metadata/mcache/inuse:bytes + /memory/classes/metadata/mcache/free:bytes.
+# TYPE go_memstats_mcache_sys_bytes gauge
+go_memstats_mcache_sys_bytes 48216
+# HELP go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures. Equals to /memory/classes/metadata/mspan/inuse:bytes.
+# TYPE go_memstats_mspan_inuse_bytes gauge
+go_memstats_mspan_inuse_bytes 199520
+# HELP go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system. Equals to /memory/classes/metadata/mspan/inuse:bytes + /memory/classes/metadata/mspan/free:bytes.
+# TYPE go_memstats_mspan_sys_bytes gauge
+go_memstats_mspan_sys_bytes 212160
+# HELP go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place. Equals to /gc/heap/goal:bytes.
+# TYPE go_memstats_next_gc_bytes gauge
+go_memstats_next_gc_bytes 1.1776162e+07
+# HELP go_memstats_other_sys_bytes Number of bytes used for other system allocations. Equals to /memory/classes/other:bytes.
+# TYPE go_memstats_other_sys_bytes gauge
+go_memstats_other_sys_bytes 1.341185e+06
+# HELP go_memstats_stack_inuse_bytes Number of bytes obtained from system for stack allocator in non-CGO environments. Equals to /memory/classes/heap/stacks:bytes.
+# TYPE go_memstats_stack_inuse_bytes gauge
+go_memstats_stack_inuse_bytes 1.114112e+06
+# HELP go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator. Equals to /memory/classes/heap/stacks:bytes + /memory/classes/os-stacks:bytes.
+# TYPE go_memstats_stack_sys_bytes gauge
+go_memstats_stack_sys_bytes 1.114112e+06
+# HELP go_memstats_sys_bytes Number of bytes obtained from system. Equals to /memory/classes/total:byte.
+# TYPE go_memstats_sys_bytes gauge
+go_memstats_sys_bytes 2.294107e+07
+# HELP go_sched_gomaxprocs_threads The current runtime.GOMAXPROCS setting, or the number of operating system threads that can execute user-level Go code simultaneously. Sourced from /sched/gomaxprocs:threads.
+# TYPE go_sched_gomaxprocs_threads gauge
+go_sched_gomaxprocs_threads 16
+# HELP go_threads Number of OS threads created.
+# TYPE go_threads gauge
+go_threads 10
+# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE process_cpu_seconds_total counter
+process_cpu_seconds_total 0.25
+# HELP process_max_fds Maximum number of open file descriptors.
+# TYPE process_max_fds gauge
+process_max_fds 1.048576e+06
+# HELP process_network_receive_bytes_total Number of bytes received by the process over the network.
+# TYPE process_network_receive_bytes_total counter
+process_network_receive_bytes_total 30821
+# HELP process_network_transmit_bytes_total Number of bytes sent by the process over the network.
+# TYPE process_network_transmit_bytes_total counter
+process_network_transmit_bytes_total 36241
+# HELP process_open_fds Number of open file descriptors.
+# TYPE process_open_fds gauge
+process_open_fds 11
+# HELP process_resident_memory_bytes Resident memory size in bytes.
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes 4.6567424e+07
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds 1.79331025727e+09
+# HELP process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE process_virtual_memory_bytes gauge
+process_virtual_memory_bytes 1.32634624e+09
+# HELP process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+# TYPE process_virtual_memory_max_bytes gauge
+process_virtual_memory_max_bytes 1.8446744073709552e+19
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 1
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 0
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0
+# HELP quic_client_closed_connections Number of connections that has been closed
+# TYPE quic_client_closed_connections counter
+quic_client_closed_connections 4
+# HELP quic_client_congestion_state Current congestion control state (0=slow_start, 1=congestion_avoidance, 2=application_limited, 3=recovery, -1=unknown)
+# TYPE quic_client_congestion_state gauge
+quic_client_congestion_state{conn_index="0"} 0
+# HELP quic_client_congestion_window Current congestion window size
+# TYPE quic_client_congestion_window gauge
+quic_client_congestion_window{conn_index="0"} 0
+# HELP quic_client_latest_rtt Latest RTT measured on a connection
+# TYPE quic_client_latest_rtt gauge
+quic_client_latest_rtt{conn_index="0"} 0
+# HELP quic_client_max_udp_payload Maximum UDP payload size in bytes for a QUIC packet
+# TYPE quic_client_max_udp_payload gauge
+quic_client_max_udp_payload{conn_index="0"} 1360
+# HELP quic_client_min_rtt Lowest RTT measured on a connection in millisec
+# TYPE quic_client_min_rtt gauge
+quic_client_min_rtt{conn_index="0"} 0
+# HELP quic_client_packet_too_big_dropped Count of packets received from origin that are too big to send to the edge and are dropped as a result
+# TYPE quic_client_packet_too_big_dropped counter
+quic_client_packet_too_big_dropped 0
+# HELP quic_client_receive_bytes Number of bytes that have been received through a connection
+# TYPE quic_client_receive_bytes counter
+quic_client_receive_bytes{conn_index="0"} 12621
+# HELP quic_client_received_frames Number of frames that have been received through a connection
+# TYPE quic_client_received_frames counter
+quic_client_received_frames{conn_index="0",frame_type="Ack"} 9
+quic_client_received_frames{conn_index="0",frame_type="Crypto"} 12
+quic_client_received_frames{conn_index="0",frame_type="HandshakeDone"} 4
+quic_client_received_frames{conn_index="0",frame_type="NewConnectionID"} 12
+quic_client_received_frames{conn_index="0",frame_type="NewToken"} 4
+quic_client_received_frames{conn_index="0",frame_type="Stream"} 8
+# HELP quic_client_sent_bytes Number of bytes that have been sent through a connection
+# TYPE quic_client_sent_bytes counter
+quic_client_sent_bytes{conn_index="0"} 21243
+# HELP quic_client_sent_frames Number of frames that have been sent through a connection
+# TYPE quic_client_sent_frames counter
+quic_client_sent_frames{conn_index="0",frame_type="Ack"} 17
+quic_client_sent_frames{conn_index="0",frame_type="ConnectionClose"} 4
+quic_client_sent_frames{conn_index="0",frame_type="Crypto"} 24
+quic_client_sent_frames{conn_index="0",frame_type="RetireConnectionID"} 4
+quic_client_sent_frames{conn_index="0",frame_type="Stream"} 13
+# HELP quic_client_smoothed_rtt Calculated smoothed RTT measured on a connection in millisec
+# TYPE quic_client_smoothed_rtt gauge
+quic_client_smoothed_rtt{conn_index="0"} 0
+# HELP quic_client_total_connections Number of connections initiated
+# TYPE quic_client_total_connections counter
+quic_client_total_connections 5

@@ -6,7 +6,7 @@ profile cloudflared_connector flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/ssl_certs>
 
   # Files: the rule set the Home Assistant example profiles use for an
-  # s6-overlay based image, so init and the wrapper script can run.
+  # s6-overlay based image, so init and the connector can run.
   file,
   signal (send) set=(kill,term,int,hup,cont),
   signal (receive) set=(kill,term,int,hup,cont),
@@ -23,10 +23,13 @@ profile cloudflared_connector flags=(attach_disconnected,mediate_deleted) {
   /run/{,**} rwk,
   /dev/tty rw,
   /tmp/** rwk,
-  /run.sh ix,
 
   # add-on options and state
   /data/** rw,
+
+  # The connector, a static Rust binary in this profile: it starts and signals
+  # cloudflared and serves the panel to the ingress proxy over inet stream.
+  /usr/local/bin/connector rmix,
 
   # cloudflared runs in this profile: a static Go binary that maps itself and
   # signals its own threads for goroutine preemption.
