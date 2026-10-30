@@ -65,7 +65,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       - name: toolchain matches the Dockerfile
-        run: grep -q '^FROM rust:1\.98\.1-alpine' ../Dockerfile
+        run: grep -qE '^FROM --platform=\$BUILDPLATFORM rust:1\.98\.1-alpine' ../Dockerfile
 
       - name: cargo-deny (pinned)
         timeout-minutes: 5
@@ -101,9 +101,13 @@ jobs:
         timeout-minutes: 10
         run: cargo deny check
 
+  # On GitHub aarch64 builds on the Arm runner, as on a Raspberry Pi; on the forge's x86 runner the
+  # connector cross-compiles and only the final stage runs under QEMU.
   build:
     name: Build ${{ matrix.arch }}
-    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-26.04' || 'ubuntu-latest' }}
+    runs-on: >-
+      ${{ github.server_url != 'https://github.com' && 'ubuntu-latest'
+      || matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-26.04' }}
     strategy:
       fail-fast: false
       matrix:
@@ -112,17 +116,20 @@ jobs:
             platform: linux/amd64
           - arch: aarch64
             platform: linux/arm64
+    env:
+      TAG: cfd-ci:${{ github.run_id }}-${{ matrix.arch }}
+      NAME: cfd-ci-${{ github.run_id }}-${{ matrix.arch }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      # Builds the add-on image for one architecture with the arguments the Supervisor passes, the
-      # connector included (compiled under emulation for aarch64, hence the long timeout). The
-      # Dockerfile verifies cloudflared against a recorded SHA-256, so a build also proves the pin.
+      # Builds the add-on image for one architecture with the arguments the Supervisor passes, built
+      # by BuildKit as the Supervisor builds it. The Dockerfile verifies cloudflared against a
+      # recorded SHA-256, so a build also proves the pin.
       - name: Build
-        timeout-minutes: 90
+        timeout-minutes: 30
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: ./cloudflared_connector
@@ -131,16 +138,32 @@ jobs:
             BUILD_ARCH=${{ matrix.arch }}
             BUILD_VERSION=ci
           load: true
-          tags: cfd:${{ matrix.arch }}
+          tags: ${{ env.TAG }}
           push: false
 
       # The base image is multi-arch, so the platform alone picks it: the image must be that platform.
-      - name: Run both binaries from the built image
+      # Then the add-on starts as on a fresh install (no token) and its panel listens for ingress.
+      - name: Run the image
         timeout-minutes: 5
         run: |
-          docker image inspect --format '{{.Architecture}}' cfd:${{ matrix.arch }} \
-            | grep -qxF "$(basename ${{ matrix.platform }})"
-          docker run --rm --platform ${{ matrix.platform }} \
-            --entrypoint /usr/local/bin/cloudflared cfd:${{ matrix.arch }} --version
-          docker run --rm --platform ${{ matrix.platform }} \
-            --entrypoint /usr/local/bin/connector cfd:${{ matrix.arch }} --version
+          docker image inspect --format '{{.Architecture}}' "$TAG" | grep -qxF "$(basename ${{ matrix.platform }})"
+          docker run --rm --platform ${{ matrix.platform }} --entrypoint /usr/local/bin/cloudflared "$TAG" --version
+          docker run --rm --platform ${{ matrix.platform }} --entrypoint /usr/local/bin/connector "$TAG" --version
+          mkdir -p "$RUNNER_TEMP/data"
+          echo '{"tunnel_token": "", "loglevel": "info"}' > "$RUNNER_TEMP/data/options.json"
+          docker create --name "$NAME" --platform ${{ matrix.platform }} "$TAG" > /dev/null
+          docker cp "$RUNNER_TEMP/data/." "$NAME:/data"
+          docker start "$NAME" > /dev/null
+          for _ in $(seq 1 30); do
+            docker logs "$NAME" 2>&1 | grep -F 'panel listening on 0.0.0.0:8099' > /dev/null && break
+            sleep 2
+          done
+          docker logs "$NAME" 2>&1 | tail -n 20
+          docker logs "$NAME" 2>&1 | grep -F 'panel listening on 0.0.0.0:8099' > /dev/null
+          test "$(docker inspect -f '{{.State.Running}}' "$NAME")" = true
+
+      - name: Remove the container and image
+        if: always()
+        run: |
+          docker rm -f "$NAME" > /dev/null 2>&1 || true
+          docker image rm -f "$TAG" > /dev/null 2>&1 || true

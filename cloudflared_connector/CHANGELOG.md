@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2 - 2026-10-30
+
+- The image cross-compiles the connector on the build machine's own platform for the target, so an aarch64 image built on an x86 machine no longer compiles under emulation. On a Raspberry Pi the build is native as before.
+
 ## 1.2.1 - 2026-10-30
 
 - The tunnel token option also takes the whole install command Zero Trust shows (`cloudflared service install <token>` or `... run --token <token>`); the add-on uses the token in it.

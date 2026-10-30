@@ -1,22 +1,28 @@
-# The connector, built natively for the architecture being built: the Supervisor builds on the
-# machine that runs the add-on, and the Rust image is multi-arch. Tag and index digest pinned.
-FROM rust:1.98.1-alpine3.24@sha256:7cc1c22d77d9432f7fe012a70e6d3e555af54c2a6832700ed7d553f1769ae89f AS connector
+# The connector is cross-compiled on the build machine's own platform: the Supervisor builds with
+# BuildKit (docker buildx build --platform), which sets BUILDPLATFORM and TARGETPLATFORM, and Docker's
+# xx helpers give cargo the target's linker and musl sysroot. On a Raspberry Pi both are aarch64 and
+# the build is native. Tags and index digests pinned.
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.10.0@sha256:40fe21f44bb8cddf1eb1226db190d0a984118f62ee02a91b77d99448d28264a6 AS xx
+
+FROM --platform=$BUILDPLATFORM rust:1.98.1-alpine3.24@sha256:7cc1c22d77d9432f7fe012a70e6d3e555af54c2a6832700ed7d553f1769ae89f AS connector
 
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
-ARG BUILD_ARCH=amd64
+COPY --from=xx / /
+# hadolint ignore=DL3018
+RUN apk add --no-cache clang lld
+ARG TARGETPLATFORM
+# hadolint ignore=DL3018
+RUN xx-apk add --no-cache gcc musl-dev
 WORKDIR /src
 COPY connector/Cargo.toml connector/Cargo.lock ./
 COPY connector/src ./src
 COPY connector/web ./web
 COPY connector/fixtures ./fixtures
-RUN case "${BUILD_ARCH}" in \
-      aarch64) TARGET=aarch64-unknown-linux-musl ;; \
-      amd64)   TARGET=x86_64-unknown-linux-musl ;; \
-      *)       echo "unsupported BUILD_ARCH ${BUILD_ARCH}" >&2; exit 1 ;; \
-    esac \
- && cargo build --release --locked --target "${TARGET}" \
- && install -m 755 "target/${TARGET}/release/connector" /connector
+RUN xx-cargo build --release --locked --target-dir /target \
+ && bin="/target/$(xx-cargo --print-target-triple)/release/connector" \
+ && xx-verify --static "$bin" \
+ && install -m 755 "$bin" /connector
 
 # Home Assistant's base image is published for amd64 and arm64 under one tag; the build's
 # platform picks the matching one.

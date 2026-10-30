@@ -1,6 +1,6 @@
 [package]
 name = "connector"
-version = "1.2.1"
+version = "1.2.2"
 edition = "2024"
 license = "MIT"
 description = "Runs cloudflared for the Cloudflared Connector add-on and serves its Home Assistant panel"
