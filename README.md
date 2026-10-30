@@ -15,7 +15,7 @@ Hostnames, origins and Access policies live in Cloudflare. The add-on holds only
 3. On the add-on's Configuration tab, paste it into Tunnel token, save, and start the add-on.
 4. In Zero Trust, add a public hostname to the tunnel and an Access application for it.
 
-The tunnel is up when the Cloudflared panel shows four edge connections. Origins and troubleshooting: [DOCS.md](cloudflared_connector/DOCS.md).
+With no token set, the panel and the log say where in Zero Trust to find it. The tunnel is up when the Cloudflared panel shows four edge connections. Origins and troubleshooting: [DOCS.md](cloudflared_connector/DOCS.md).
 
 ## Options
 
@@ -50,6 +50,7 @@ The screenshots show the panel's demo mode (`connector --demo`), fed with exampl
 | Security rating | 8 (AppArmor profile, no host networking) |
 | cloudflared | 2026.10.4, SHA-256 verified at build |
 | Base image | `ghcr.io/home-assistant/base:3.24`, amd64 and arm64 |
+| Process | `connector` runs cloudflared as its child, starts it again when it exits with a wait that doubles from 1 s to 60 s, and stops it with the add-on. The token reaches cloudflared only through `TUNNEL_TOKEN`. cloudflared's output reaches the add-on log unchanged. |
 | Connector | Rust, built at install from `cloudflared_connector/connector/` in `rust:1.98.1-alpine3.24` |
 | Panel | Ingress only; answers the Supervisor's ingress proxy and nothing else |
 | Gates | `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, `cargo nextest run`, `cargo deny check`, yamllint, hadolint, the Home Assistant add-on linter, both image builds |
