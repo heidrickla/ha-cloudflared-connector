@@ -8,6 +8,8 @@ FROM --platform=$BUILDPLATFORM rust:1.98.1-alpine3.24@sha256:7cc1c22d77d9432f7fe
 
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 
+# xx installs as a whole filesystem, the way its README gives it; it is a build stage only.
+# hadolint ignore=DL3067
 COPY --from=xx / /
 # hadolint ignore=DL3018
 RUN apk add --no-cache clang lld
