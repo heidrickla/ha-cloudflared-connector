@@ -6,13 +6,23 @@ Hostnames, origins and Access policies live in Cloudflare. The add-on holds only
 
 ## Install
 
-Settings > Add-ons > Add-on Store > menu > Repositories, add:
+[![Add the repository to Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fheidrickla%2Fha-cloudflared-connector)
 
-    https://github.com/heidrickla/ha-cloudflared-connector
+[![Open the add-on in Home Assistant](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=76316d3c_cloudflared_connector&repository_url=https%3A%2F%2Fgithub.com%2Fheidrickla%2Fha-cloudflared-connector)
 
-Install `Cloudflared Connector`, set `tunnel_token`, start it. Up when the panel shows four edge connections, or the log shows `Registered tunnel connection` four times.
+1. Add the repository with the first button, then open the add-on with the second and select Install.
+2. In Cloudflare Zero Trust, Networks > Tunnels, create a tunnel with the Cloudflare (dashboard) option. Copy its token, or the whole install command Cloudflare shows.
+3. On the add-on's Configuration tab, paste it into Tunnel token, save, and start the add-on.
+4. In Zero Trust, add a public hostname to the tunnel and an Access application for it.
 
-Setup, origin addressing and troubleshooting: [DOCS.md](cloudflared_connector/DOCS.md).
+The tunnel is up when the Cloudflared panel shows four edge connections. Origins and troubleshooting: [DOCS.md](cloudflared_connector/DOCS.md).
+
+## Options
+
+| Option | Required | Default | Value |
+|---|---|---|---|
+| Tunnel token (`tunnel_token`) | yes | | The tunnel's token, or the install command that contains it |
+| Log level (`loglevel`) | no | `info` | `debug`, `info`, `warn` or `error` |
 
 ## Panel
 
@@ -39,10 +49,10 @@ The screenshots show the panel's demo mode (`connector --demo`), fed with exampl
 | Architectures | amd64, aarch64 |
 | Security rating | 8 (AppArmor profile, no host networking) |
 | cloudflared | 2026.10.4, SHA-256 verified at build |
-| Base image | `ghcr.io/home-assistant/{arch}-base:3.24` |
+| Base image | `ghcr.io/home-assistant/base:3.24`, amd64 and arm64 |
 | Connector | Rust, built at install from `cloudflared_connector/connector/` in `rust:1.98.1-alpine3.24` |
 | Panel | Ingress only; answers the Supervisor's ingress proxy and nothing else |
-| Gates | `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, `cargo nextest run`, `cargo deny check`, yamllint, hadolint, both image builds |
+| Gates | `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, `cargo nextest run`, `cargo deny check`, yamllint, hadolint, the Home Assistant add-on linter, both image builds |
 
 ## Layout
 

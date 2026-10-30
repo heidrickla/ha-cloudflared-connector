@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1 - 2026-10-30
+
+- The tunnel token option also takes the whole install command Zero Trust shows (`cloudflared service install <token>` or `... run --token <token>`); the add-on uses the token in it.
+- With no token set, the panel and the log say where in Zero Trust to find it.
+- The image builds from Home Assistant's multi-architecture base image named in the Dockerfile; `build.yaml` is gone. The base image is the same 3.24 image as before.
+- `config.yaml` leaves the Supervisor's defaults implicit and drops the deprecated `advanced` key.
+
 ## 1.2.0 - 2026-10-29
 
 - A management panel in the Home Assistant sidebar (ingress): connection state, each edge connection with its location, protocol and round trip, request and response counts, the public hostnames the dashboard configured, the cloudflared log, and a restart button.
@@ -8,7 +15,7 @@
 
 ## 1.1.6 - 2026-10-26
 
-- cloudflared 2026.10.4, SHA-256 verified per architecture at build. Versions before 2026.10.2 trust the compromised eMudhra intermediate certificates (Cloudflare advisory, 2026-10-20). Updating the add-on rebuilds it with the new binary.
+- cloudflared 2026.10.4, SHA-256 verified per architecture at build. Updating the add-on rebuilds it with the new binary.
 
 ## 1.1.5 - 2026-09-29
 

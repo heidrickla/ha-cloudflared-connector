@@ -23,13 +23,20 @@ jobs:
           pipx run yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}, comments: {min-spaces-from-content: 1}}}" \
             repository.yaml \
             cloudflared_connector/config.yaml \
-            cloudflared_connector/build.yaml \
             cloudflared_connector/translations/en.yaml
 
       - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: cloudflared_connector/Dockerfile
           ignore: DL3018
+
+      # Frenck's add-on linter (renamed action-app-linter): config.yaml against the Supervisor's
+      # schema, defaults left implicit, deprecated keys refused.
+      - name: Add-on linter
+        timeout-minutes: 15
+        uses: frenck/action-app-linter@b9cfd1bc62ba60d2c4fc96317b5f7ada5923f4a7 # v2.21.1
+        with:
+          path: ./cloudflared_connector
 
   rust:
     name: Rust
@@ -102,26 +109,18 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            base: ghcr.io/home-assistant/amd64-base:3.24
             platform: linux/amd64
           - arch: aarch64
-            base: ghcr.io/home-assistant/aarch64-base:3.24
             platform: linux/arm64
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      # The matrix names the base the Supervisor builds from; a stale copy tests
-      # an image nobody installs.
-      - name: Base matches build.yaml
-        run: |
-          grep -qxF "  ${{ matrix.arch }}: ${{ matrix.base }}" cloudflared_connector/build.yaml
-
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      # Builds the add-on image for one architecture, the connector included (compiled under
-      # emulation for aarch64, hence the long timeout). The Dockerfile verifies the cloudflared
-      # binary against a recorded SHA-256, so a build that succeeds also proves the pin.
+      # Builds the add-on image for one architecture with the arguments the Supervisor passes, the
+      # connector included (compiled under emulation for aarch64, hence the long timeout). The
+      # Dockerfile verifies cloudflared against a recorded SHA-256, so a build also proves the pin.
       - name: Build
         timeout-minutes: 90
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
@@ -129,15 +128,18 @@ jobs:
           context: ./cloudflared_connector
           platforms: ${{ matrix.platform }}
           build-args: |
-            BUILD_FROM=${{ matrix.base }}
             BUILD_ARCH=${{ matrix.arch }}
+            BUILD_VERSION=ci
           load: true
           tags: cfd:${{ matrix.arch }}
           push: false
 
+      # The base image is multi-arch, so the platform alone picks it: the image must be that platform.
       - name: Run both binaries from the built image
         timeout-minutes: 5
         run: |
+          docker image inspect --format '{{.Architecture}}' cfd:${{ matrix.arch }} \
+            | grep -qxF "$(basename ${{ matrix.platform }})"
           docker run --rm --platform ${{ matrix.platform }} \
             --entrypoint /usr/local/bin/cloudflared cfd:${{ matrix.arch }} --version
           docker run --rm --platform ${{ matrix.platform }} \

@@ -13,7 +13,7 @@ use std::time::{Duration, Instant};
 use crate::clock;
 use crate::logbook::LogBook;
 use crate::options::Token;
-use crate::status::{Exit, Phase, Supervision};
+use crate::status::{Exit, NO_TOKEN, Phase, Supervision};
 
 pub enum Control {
     Restart,
@@ -95,7 +95,7 @@ impl Supervisor {
     /// Runs until a stop request; cloudflared is stopped before it returns.
     pub fn run(self) {
         if self.token.is_empty() {
-            self.note("tunnel_token is empty; set it in the add-on options.");
+            self.note(NO_TOKEN);
             self.shared.supervision().phase = Phase::Unconfigured;
             while !matches!(self.rx.recv(), Ok(Control::Stop) | Err(_)) {}
             return;

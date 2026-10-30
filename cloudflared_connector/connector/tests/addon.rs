@@ -22,7 +22,8 @@ fn the_add_on_version_is_the_crate_version_and_has_a_changelog_entry() {
 #[test]
 fn the_ingress_port_is_the_port_the_panel_listens_on() {
     assert_eq!(config_value("ingress"), Some("true"));
-    let port = config_value("ingress_port").unwrap();
+    // 8099 is the Supervisor's default, which the add-on linter wants left implicit.
+    let port = config_value("ingress_port").unwrap_or("8099");
     assert!(MAIN.contains(&format!("const PANEL: &str = \"0.0.0.0:{port}\";")));
 }
 

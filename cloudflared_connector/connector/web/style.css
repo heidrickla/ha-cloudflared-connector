@@ -1,4 +1,4 @@
-/* Mission Bridge's panel palette: status colours for state, series colours for identity, and colour
+/* Panel palette: status colours for state, series colours for identity, and colour
    always beside a text label. Dark is the default; the light theme only redefines the tokens. */
 :root {
   color-scheme: dark;

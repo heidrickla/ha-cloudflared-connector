@@ -14,6 +14,10 @@ use crate::metrics::Metrics;
 pub const EXPECTED_CONNECTIONS: u32 = 4;
 /// Time cloudflared gets to open its metrics listener before a failed reading is reported.
 pub const SETTLE_S: u64 = 15;
+/// What the panel and the add-on log say while the token option is empty.
+pub const NO_TOKEN: &str = "No tunnel token. In Cloudflare Zero Trust, Networks > Tunnels, copy the \
+    tunnel's token, or the whole install command it shows, into tunnel_token on the add-on's \
+    Configuration tab, then restart the add-on.";
 
 /// What the supervisor knows about cloudflared, independent of what cloudflared reports.
 #[derive(Debug, Clone, Default)]
@@ -261,9 +265,7 @@ pub fn build(i: &Inputs<'_>) -> Status {
 fn headline(state: State, ready: u32, retry_in_s: Option<u64>, exit: Option<&Exit>) -> String {
     let of = format!("{ready} of {EXPECTED_CONNECTIONS} edge connections registered");
     match state {
-        State::Unconfigured => {
-            "No tunnel token. Set tunnel_token in the add-on's Configuration tab.".into()
-        }
+        State::Unconfigured => NO_TOKEN.into(),
         State::Connected | State::Degraded => of,
         State::Starting => "cloudflared is starting.".into(),
         State::Disconnected => format!("{of}; cloudflared keeps retrying."),

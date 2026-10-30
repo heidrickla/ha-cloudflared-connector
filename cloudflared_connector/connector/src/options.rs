@@ -17,22 +17,32 @@ pub struct Options {
 pub struct Token(String);
 
 impl Token {
+    /// Zero Trust shows the token inside an install command (`cloudflared service install <token>`,
+    /// `... tunnel run --token <token>`), so a pasted command yields the token it carries.
     pub fn new(value: String) -> Self {
-        Self(value)
+        let words: Vec<&str> = value.split_whitespace().collect();
+        let token = match words.iter().position(|w| *w == "--token") {
+            Some(i) => words.get(i + 1).copied(),
+            None => words
+                .iter()
+                .find_map(|w| w.strip_prefix("--token="))
+                .or_else(|| words.last().copied()),
+        };
+        Self(token.unwrap_or_default().to_string())
     }
 
     pub fn is_empty(&self) -> bool {
-        self.0.trim().is_empty()
+        self.0.is_empty()
     }
 
     pub fn expose(&self) -> &str {
-        self.0.trim()
+        &self.0
     }
 }
 
 impl fmt::Debug for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Token({} chars)", self.0.trim().len())
+        write!(f, "Token({} chars)", self.0.len())
     }
 }
 
@@ -88,5 +98,24 @@ mod tests {
         let shown = format!("{:?}", o.tunnel_token);
         assert_eq!(shown, "Token(19 chars)");
         assert!(!shown.contains("eyJ"));
+    }
+
+    #[test]
+    fn a_pasted_install_command_yields_its_token() {
+        let pasted = [
+            "sudo cloudflared service install abc.def",
+            "cloudflared.exe service install abc.def\n",
+            "brew install cloudflared &&\nsudo cloudflared service install abc.def",
+            "docker run cloudflare/cloudflared:latest tunnel --no-autoupdate run --token abc.def",
+            "cloudflared tunnel run --token=abc.def",
+            "abc.def",
+        ];
+        for value in pasted {
+            let json = serde_json::json!({ "tunnel_token": value }).to_string();
+            let o = Options::parse(&json).unwrap();
+            assert_eq!(o.tunnel_token.expose(), "abc.def", "from {value:?}");
+        }
+        let o = Options::parse(r#"{"tunnel_token": " \n "}"#).unwrap();
+        assert!(o.tunnel_token.is_empty());
     }
 }

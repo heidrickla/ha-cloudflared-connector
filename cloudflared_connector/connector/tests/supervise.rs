@@ -128,7 +128,7 @@ fn without_a_token_nothing_starts_and_stop_still_returns() {
     assert_eq!(shared.supervision().phase, Phase::Unconfigured);
     let lines = texts(&shared);
     assert!(lines.iter().all(|t| t != "should-not-run"), "{lines:?}");
-    assert!(lines.iter().any(|t| t.contains("tunnel_token is empty")));
+    assert!(lines.iter().any(|t| t.contains("No tunnel token.")));
     tx.send(Control::Restart).unwrap();
     tx.send(Control::Stop).unwrap();
     handle.join().unwrap();

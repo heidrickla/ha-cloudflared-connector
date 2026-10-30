@@ -1,7 +1,9 @@
 configuration:
   tunnel_token:
     name: Tunnel token
-    description: Connector token from Zero Trust, Networks, Tunnels.
+    description: >-
+      From Cloudflare Zero Trust, Networks > Tunnels, your tunnel. Paste the token, or the whole
+      install command Cloudflare shows; the add-on takes the token from it.
   loglevel:
     name: Log level
     description: cloudflared log level. Use debug to diagnose a connection.

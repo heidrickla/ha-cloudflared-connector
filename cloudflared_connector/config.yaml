@@ -1,5 +1,5 @@
 name: Cloudflared Connector
-version: "1.2.0"
+version: "1.2.1"
 slug: cloudflared_connector
 description: Connector for a Cloudflare Tunnel that is managed in the Zero Trust dashboard
 url: https://github.com/heidrickla/ha-cloudflared-connector
@@ -7,12 +7,8 @@ arch:
   - amd64
   - aarch64
 startup: services
-boot: auto
 init: false
-stage: stable
-advanced: false
 ingress: true
-ingress_port: 8099
 panel_icon: mdi:cloud-lock
 panel_title: Cloudflared
 options:

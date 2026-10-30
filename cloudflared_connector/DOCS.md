@@ -4,12 +4,12 @@ Runs the connector for a Cloudflare Tunnel configured in the Zero Trust dashboar
 
 ## Setup
 
-1. Zero Trust > Networks > Tunnels. Create a tunnel with the Cloudflare (dashboard) configuration option. Copy the connector token.
+1. Zero Trust > Networks > Tunnels. Create a tunnel with the Cloudflare (dashboard) configuration option. Copy the connector token, or the whole install command Cloudflare shows.
 2. Add a public hostname to the tunnel, origin per the table below.
 3. Add a Cloudflare Access application for that hostname. Without one the service is on the open internet.
-4. Set `tunnel_token` here and start the add-on.
+4. Paste it into Tunnel token on the Configuration tab, save, and start the add-on.
 
-Up when the Cloudflared panel shows four edge connections and Zero Trust reports the tunnel Healthy. The install command Cloudflare displays is not needed; this add-on replaces it.
+Up when the Cloudflared panel shows four edge connections and Zero Trust reports the tunnel Healthy. The add-on runs the connector itself, so nothing from the install command is run; only its token is used.
 
 ## Panel
 
@@ -35,7 +35,7 @@ Hostnames are edited in Zero Trust, not here.
 
 | Option | Required | Default | Values |
 |---|---|---|---|
-| `tunnel_token` | yes | | Connector token from Zero Trust |
+| `tunnel_token` | yes | | Connector token from Zero Trust, or the install command that contains it |
 | `loglevel` | no | `info` | `debug`, `info`, `warn`, `error` |
 
 ## Origins

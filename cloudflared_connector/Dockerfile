@@ -1,5 +1,3 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.24
-
 # The connector, built natively for the architecture being built: the Supervisor builds on the
 # machine that runs the add-on, and the Rust image is multi-arch. Tag and index digest pinned.
 FROM rust:1.98.1-alpine3.24@sha256:7cc1c22d77d9432f7fe012a70e6d3e555af54c2a6832700ed7d553f1769ae89f AS connector
@@ -20,10 +18,9 @@ RUN case "${BUILD_ARCH}" in \
  && cargo build --release --locked --target "${TARGET}" \
  && install -m 755 "target/${TARGET}/release/connector" /connector
 
-# Tag is in the ARG default and build.yaml; the Supervisor overrides BUILD_FROM
-# per architecture, so it cannot be tagged inline.
-# hadolint ignore=DL3006
-FROM ${BUILD_FROM}
+# Home Assistant's base image is published for amd64 and arm64 under one tag; the build's
+# platform picks the matching one.
+FROM ghcr.io/home-assistant/base:3.24
 
 # The checksum check below pipes into sha256sum; failures must propagate.
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
@@ -52,27 +49,20 @@ RUN /usr/local/bin/connector --version
 
 CMD ["/usr/local/bin/connector"]
 
-ARG BUILD_DATE
-ARG BUILD_DESCRIPTION
-ARG BUILD_NAME
-ARG BUILD_REF
-ARG BUILD_REPOSITORY
 ARG BUILD_VERSION
 LABEL \
-    io.hass.name="${BUILD_NAME}" \
-    io.hass.description="${BUILD_DESCRIPTION}" \
+    io.hass.name="Cloudflared Connector" \
+    io.hass.description="Connector for a Cloudflare Tunnel that is managed in the Zero Trust dashboard" \
     io.hass.arch="${BUILD_ARCH}" \
     io.hass.type="addon" \
     io.hass.version="${BUILD_VERSION}" \
     maintainer="Lewis Heidrick" \
-    org.opencontainers.image.title="${BUILD_NAME}" \
-    org.opencontainers.image.description="${BUILD_DESCRIPTION}" \
+    org.opencontainers.image.title="Cloudflared Connector" \
+    org.opencontainers.image.description="Connector for a Cloudflare Tunnel that is managed in the Zero Trust dashboard" \
     org.opencontainers.image.vendor="Lewis Heidrick" \
     org.opencontainers.image.authors="Lewis Heidrick" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.url="https://github.com/heidrickla/ha-cloudflared-connector" \
-    org.opencontainers.image.source="https://github.com/${BUILD_REPOSITORY}" \
-    org.opencontainers.image.documentation="https://github.com/${BUILD_REPOSITORY}/blob/main/cloudflared_connector/DOCS.md" \
-    org.opencontainers.image.created="${BUILD_DATE}" \
-    org.opencontainers.image.revision="${BUILD_REF}" \
+    org.opencontainers.image.source="https://github.com/heidrickla/ha-cloudflared-connector" \
+    org.opencontainers.image.documentation="https://github.com/heidrickla/ha-cloudflared-connector/blob/main/cloudflared_connector/DOCS.md" \
     org.opencontainers.image.version="${BUILD_VERSION}"
