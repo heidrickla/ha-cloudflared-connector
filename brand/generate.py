@@ -1,6 +1,6 @@
-"""Derive the add-on's icon.png (128x128) and logo.png (250x100) from
-icon-source-dark.png. Scales and composes only; does not redraw the artwork.
-icon-family-reference.png is the design reference for the wider icon family.
+"""Derive the app's icon.png and logo.png from icon-source.png.
+
+Scales and composes the approved artwork without redrawing it.
 
     python brand/generate.py
 """
@@ -13,8 +13,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 ADDON = ROOT / "cloudflared_connector"
-SOURCE = ROOT / "brand" / "icon-source-dark.png"
-S = 4                       # supersampling for the composed logo
+SOURCE = ROOT / "brand" / "icon-source.png"
+S = 4  # supersampling for the composed logo
 
 ORANGE = (246, 130, 31)
 SLATE = (31, 41, 51)
