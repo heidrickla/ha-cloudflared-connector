@@ -78,14 +78,12 @@ function codeClass(code) {
 // --- sections -------------------------------------------------------------------------------------
 
 function tiles(s) {
-  const [cls, word] = STATES[s.state] || ['idle', s.state];
   const c = s.connections;
   const t = s.traffic;
   const tile = (k, v, vcls, alert) =>
     el('div', { class: `tile${alert ? ' alert' : ''}`, title: k },
       el('div', { class: 'k' }, k), el('div', { class: 'v row' }, vcls ? dot(vcls) : null, v));
   return [
-    tile('State', word, cls, cls !== 'good'),
     tile('Edge connections', `${c.ready} of ${c.expected}`,
       c.ready >= c.expected ? 'good' : c.ready > 0 ? 'warn' : 'crit'),
     tile('cloudflared up', duration(s.process.uptime_s), s.process.running ? 'run' : 'idle'),
@@ -200,6 +198,12 @@ function render() {
   const s = view.last;
   if (!s) return;
   document.getElementById('version').textContent = s.addon_version;
+  const [stateClass, stateWord] = STATES[s.state] || ['idle', s.state];
+  document.getElementById('state-dot').className = `dot ${view.failed ? 'idle' : stateClass}`;
+  document.getElementById('state-word').textContent = view.failed ? `Last known: ${stateWord}` : stateWord;
+  document.getElementById('freshness').textContent = view.failed
+    ? `Connection lost · last status ${when(s.generated_at)}`
+    : `Status updated ${when(s.generated_at)}`;
   document.getElementById('tiles').replaceChildren(...tiles(s));
   document.getElementById('headline').textContent = s.headline;
   const notices = s.notices.map((n) => el('div', { class: 'notice small' }, n));

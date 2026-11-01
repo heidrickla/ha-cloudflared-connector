@@ -10,11 +10,15 @@
 <body>
 <main>
   <header class="top">
-    <h1>Cloudflared <small id="version"></small></h1>
+    <div><p class="eyebrow">CLOUDFLARE TUNNEL</p><h1>Cloudflared <small id="version"></small></h1></div>
     <button id="theme" type="button" title="Switch the colour theme">Light</button>
   </header>
+  <section class="hero" aria-label="Connector status">
+    <div class="hero-heading"><span id="state-dot" class="dot" aria-hidden="true"></span><span id="state-word">Connecting</span></div>
+    <p id="headline" class="headline"></p>
+    <p id="freshness" class="freshness"></p>
+  </section>
   <div id="tiles" class="tiles"></div>
-  <p id="headline" class="headline"></p>
   <div id="notices"></div>
   <nav class="tabs" role="tablist">
     <button type="button" role="tab" data-tab="overview">Overview</button>

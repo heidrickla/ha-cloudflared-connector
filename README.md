@@ -40,7 +40,7 @@ The add-on adds a Cloudflared page to the Home Assistant sidebar. It refreshes e
 
 ![Log](docs/screenshots/log.png)
 
-The screenshots show the panel's demo mode (`connector --demo`), fed with example data.
+The screenshots show the panel's demo mode (`connector --demo`), fed with example data. [See the phone layout](docs/screenshots/mobile.png).
 
 ## Properties
 
